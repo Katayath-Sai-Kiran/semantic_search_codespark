@@ -1,0 +1,30 @@
+name: semantic_search_codespark
+description: >-
+  Offline semantic search for Flutter — match by meaning, not spelling. Finds
+  'physician' when users type 'doctor'. On-device MiniLM, no API keys, tiny API.
+version: 0.1.0
+repository: https://github.com/Katayath-Sai-Kiran/semantic_search_codespark
+homepage: https://ksaikiran.dev
+issue_tracker: https://github.com/Katayath-Sai-Kiran/semantic_search_codespark/issues
+topics:
+  - semantic-search
+  - embeddings
+  - search
+  - nlp
+  - on-device
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  ai_core_codespark: ^0.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
