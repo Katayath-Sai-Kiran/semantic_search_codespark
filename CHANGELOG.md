@@ -1,3 +1,10 @@
+## 0.1.1
+
+- Docs: rewrote the README around the use case (lead example, real-world object
+  search, when-to-use guidance, limitations & tips).
+- Discoverability: sharper description and topics (semantic / vector search,
+  embeddings, AI, offline).
+
 ## 0.1.0
 
 Initial release — offline semantic search for Flutter.
