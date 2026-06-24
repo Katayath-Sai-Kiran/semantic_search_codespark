@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ai_core_codespark/ai_core_codespark.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:semantic_search_codespark/semantic_search_codespark.dart';
 
@@ -174,5 +176,96 @@ void main() {
       () => s.search(query: 'x', items: ['y']),
       throwsStateError,
     );
+  });
+
+  group('persistence', () {
+    test('save/restore round-trips typed items and ranks by meaning', () async {
+      final index = await search.createIndex<Map<String, dynamic>>(
+        items: [
+          {'id': 'a', 'text': 'automobile'},
+          {'id': 'b', 'text': 'banana'},
+        ],
+        textOf: (m) => m['text'] as String,
+      );
+
+      final dir = await Directory.systemTemp.createTemp('sscs_test');
+      final path = '${dir.path}/index.json';
+      await index.save(path, encode: (m) => m);
+
+      // Fresh engine that has NOT embedded anything.
+      final fake2 = FakeEmbedder();
+      final s2 = SemanticSearch.withEmbedder(fake2);
+      await s2.initialize();
+      final before = fake2.batchCalls;
+
+      final restored = await s2.loadIndex<Map<String, dynamic>>(
+        path: path,
+        decode: (json) => json,
+      );
+
+      expect(restored.length, 2);
+      expect(fake2.batchCalls, before,
+          reason: 'restore must not re-embed the corpus');
+
+      final hits = await restored.search('car', topK: 1);
+      expect(hits.first.item['id'], 'a');
+
+      await dir.delete(recursive: true);
+    });
+
+    test('restore rejects a dimension mismatch (model changed)', () async {
+      final index =
+          await search.createIndex<String>(items: ['car'], textOf: (x) => x);
+      final dir = await Directory.systemTemp.createTemp('sscs_dim');
+      final path = '${dir.path}/i.json';
+      await index.save(path, encode: (s) => {'t': s});
+
+      // Simulate a model change by editing the saved dimension.
+      final f = File(path);
+      final json = (await f.readAsString())
+          .replaceFirst('"dimension":4', '"dimension":999');
+      await f.writeAsString(json);
+
+      expect(
+        () => search.loadIndex<String>(path: path, decode: (j) => j['t'] as String),
+        throwsStateError,
+      );
+      await dir.delete(recursive: true);
+    });
+  });
+
+  group('SemanticIndex.add()', () {
+    test('appends new items without re-embedding existing ones', () async {
+      final index =
+          await search.createIndex<String>(items: ['banana'], textOf: (x) => x);
+      await index.add(['automobile'], textOf: (x) => x);
+      expect(index.length, 2);
+      final hits = await index.search('car', topK: 1);
+      expect(hits.first.item, 'automobile');
+    });
+  });
+
+  group('SemanticSearchField widget', () {
+    testWidgets('shows ranked results as the user types', (tester) async {
+      final index = await search.createIndex<String>(
+        items: ['automobile', 'banana'],
+        textOf: (x) => x,
+      );
+
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: SemanticSearchField<String>(
+            index: index,
+            debounce: Duration.zero,
+            resultBuilder: (c, r) => ListTile(title: Text(r.item)),
+          ),
+        ),
+      ));
+
+      await tester.enterText(find.byType(TextField), 'car');
+      await tester.pumpAndSettle();
+
+      expect(find.text('automobile'), findsOneWidget);
+    });
   });
 }

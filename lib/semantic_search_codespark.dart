@@ -8,6 +8,7 @@ export 'src/semantic_search.dart';
 export 'src/semantic_index.dart';
 export 'src/semantic_result.dart';
 export 'src/search_embedder.dart';
+export 'src/semantic_search_field.dart';
 
 // Re-export the bits of the core a typical user needs, so they don't have to
 // add ai_core_codespark as a direct dependency for common cases.

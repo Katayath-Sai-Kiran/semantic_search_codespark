@@ -77,7 +77,44 @@ final b = await index.search('how do I pay');        // matches "Payment methods
 
 Both `search()` and `index.search()` take `topK` and an optional cosine
 `threshold`. The index also offers `searchDiverse()` (MMR) to avoid
-near-duplicate results.
+near-duplicate results, and `add()` to append items without re-embedding.
+
+## Embed once, ever — persist the index
+
+Save the built index to disk and reload it next launch, so you never re-embed
+the same corpus twice:
+
+```dart
+// First launch: build + save
+final index = await search.createIndex<Faq>(items: faqs, textOf: (f) => f.title);
+await index.save(cachePath, encode: (f) => f.toJson());
+
+// Later launches: load instantly, no re-embedding
+final index = await search.loadIndex<Faq>(
+  path: cachePath,
+  decode: (json) => Faq.fromJson(json),
+);
+```
+
+(Filesystem-backed — mobile & desktop. It rejects a reload if the model
+dimension changed, so stale vectors can't sneak in.)
+
+## Drop-in search widget
+
+Hand `SemanticSearchField` an index and a result builder — it handles the text
+field, debouncing, and search-as-you-type:
+
+```dart
+SemanticSearchField<Faq>(
+  index: faqIndex,
+  hintText: 'Ask a question…',
+  onResultTap: (r) => openFaq(r.item),
+  resultBuilder: (context, r) => ListTile(
+    title: Text(r.item.title),
+    trailing: Text(r.score.toStringAsFixed(2)),
+  ),
+)
+```
 
 ## Install
 
@@ -124,10 +161,11 @@ pipelines, classification, diversity/MMR) use the engine directly.
 
 ## Roadmap
 
-- **v0.1** — on-device semantic search (this release).
-- **v0.2** — hybrid search (semantic + fuzzy via RRF) and a persistent,
-  save-to-disk index so you embed once *ever*.
-- **Later** — a drop-in `SemanticSearchField` widget and a multilingual model.
+- **v0.1** — on-device semantic search.
+- **v0.2** — persistent save-to-disk index, incremental `add()`, and the
+  `SemanticSearchField` widget (this release).
+- **Next** — hybrid search (semantic + fuzzy via RRF) for typo-proof matching,
+  then a multilingual model.
 
 ## More from ksaikiran.dev
 

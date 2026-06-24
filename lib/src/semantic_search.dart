@@ -84,7 +84,8 @@ class SemanticSearch {
   }
 
   /// Builds a reusable [SemanticIndex] (embeds items once). Use for datasets
-  /// queried repeatedly.
+  /// queried repeatedly. Persist it with [SemanticIndex.save] and reload with
+  /// [loadIndex] to embed the corpus once *ever*.
   Future<SemanticIndex<T>> createIndex<T>({
     required List<T> items,
     required String Function(T) textOf,
@@ -94,6 +95,27 @@ class SemanticSearch {
       embedder: _embedder,
       items: items,
       textOf: textOf,
+    );
+  }
+
+  /// Loads an index previously written with [SemanticIndex.save] — no
+  /// re-embedding. [decode] rebuilds each item from its saved JSON map.
+  ///
+  /// ```dart
+  /// final index = await search.loadIndex<Faq>(
+  ///   path: cachePath,
+  ///   decode: (json) => Faq.fromJson(json),
+  /// );
+  /// ```
+  Future<SemanticIndex<T>> loadIndex<T>({
+    required String path,
+    required T Function(Map<String, dynamic> json) decode,
+  }) {
+    _ensureReady();
+    return SemanticIndex.restore<T>(
+      embedder: _embedder,
+      path: path,
+      decode: decode,
     );
   }
 

@@ -1,3 +1,13 @@
+## 0.2.0
+
+- **Persistent index** — `SemanticIndex.save()` and `SemanticSearch.loadIndex()`
+  serialize the corpus + vectors to disk (compact base64), so you embed once
+  *ever* instead of on every launch. Guards against a model/dimension change.
+- **`SemanticSearchField`** — a drop-in, debounced search widget: hand it an
+  index and a result builder, get search-as-you-type with your own UI.
+- **`SemanticIndex.add()`** — append new items to an existing index without
+  re-embedding the whole corpus. Plus `items` and `dimension` getters.
+
 ## 0.1.1
 
 - Docs: rewrote the README around the use case (lead example, real-world object
