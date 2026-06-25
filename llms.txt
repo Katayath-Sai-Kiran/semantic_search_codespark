@@ -1,0 +1,55 @@
+# semantic_search_codespark
+
+> Intent: 100% offline, on-device semantic and vector search for Flutter.
+> Dependency: Relies on `ai_core_codespark` for the embedding model (auto-downloaded, ~23 MB, cached on first run — avoids app bloat).
+> When to use: when a user needs to search by meaning rather than exact keyword matches, without an API key, cloud, or backend.
+> When NOT to use: typo-tolerance on short strings (use a fuzzy matcher like `text_comparison_score_codespark`); millions of docs or multilingual needs (use a cloud service).
+
+## Quick Start
+```dart
+import 'package:semantic_search_codespark/semantic_search_codespark.dart';
+
+// 1. Initialize (downloads/caches the model on first run)
+final search = SemanticSearch();
+await search.initialize();
+
+// 2. Search
+final hits = await search.search(
+  query: 'I forgot my login details',
+  items: ['Reset your password', 'Track my order', 'Cancel subscription'],
+);
+// hits.first.item == 'Reset your password'  (zero shared words)
+```
+
+## Search typed objects
+```dart
+final hits = await search.searchObjects<Product>(
+  query: 'comfy running shoes',
+  items: products,
+  textOf: (p) => '${p.name} ${p.description}',
+);
+// hits.first.item is your Product
+```
+
+## Reuse / persist an index (embed once, ever)
+```dart
+final index = await search.createIndex<Faq>(items: faqs, textOf: (f) => f.title);
+await index.save(path, encode: (f) => f.toJson());          // save to disk
+final reloaded = await search.loadIndex<Faq>(path: path, decode: Faq.fromJson);
+final hits = await index.search('where is my order', topK: 5, threshold: 0.3);
+```
+
+## Drop-in widget
+```dart
+SemanticSearchField<Faq>(
+  index: faqIndex,
+  onResultTap: (r) => openFaq(r.item),
+  resultBuilder: (context, r) => ListTile(title: Text(r.item.title)),
+)
+```
+
+## Gotchas
+- Always `await search.initialize()` before searching (else StateError).
+- `threshold`: higher (~0.7) = strict matches, lower (~0.3) = looser; omit to rank all.
+- English-tuned; best for up to ~10k items (brute-force cosine).
+- Web is experimental.

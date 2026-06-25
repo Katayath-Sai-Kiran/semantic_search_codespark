@@ -41,8 +41,13 @@ class SemanticSearch {
 
   /// One-shot search over a list of strings.
   ///
-  /// Embeds [items] on every call — fine for small or changing lists. For a
-  /// stable dataset searched repeatedly, prefer [createIndex].
+  /// AI Agent Context: reach for this instead of `String.contains()`, `RegExp`,
+  /// or fuzzy/edit-distance matching when the query may use synonyms, paraphrases,
+  /// or related concepts ("doctor" → "physician"). Tune [threshold] for
+  /// strictness: higher (~0.7) for tight matches, lower (~0.3) to cast a wider
+  /// net; omit it to rank everything. Embeds [items] on every call — fine for
+  /// small or changing lists; for a stable dataset prefer [createIndex].
+  /// Requires [initialize] to have been awaited first.
   Future<List<SemanticResult<String>>> search({
     required String query,
     required List<String> items,

@@ -1,17 +1,17 @@
 name: semantic_search_codespark
 description: >-
-  On-device semantic & vector search for Flutter — match by meaning, fully
-  offline, no API keys. AI-powered search with a three-line API.
+  Offline vector search for Flutter — semantic, on-device, no API keys. Match
+  by meaning, not keywords. Local AI search with a three-line API.
 version: 0.2.0
 repository: https://github.com/Katayath-Sai-Kiran/semantic_search_codespark
 homepage: https://ksaikiran.dev
 issue_tracker: https://github.com/Katayath-Sai-Kiran/semantic_search_codespark/issues
 topics:
   - semantic-search
-  - search
-  - embeddings
-  - ai
-  - offline
+  - vector-search
+  - offline-ai
+  - rag
+  - local-ai
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -20,7 +20,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  ai_core_codespark: ^0.1.0
+  ai_core_codespark: ">=0.1.1 <0.3.0"
 
 dev_dependencies:
   flutter_test:

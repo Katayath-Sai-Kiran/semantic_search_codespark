@@ -7,6 +7,11 @@
   index and a result builder, get search-as-you-type with your own UI.
 - **`SemanticIndex.add()`** — append new items to an existing index without
   re-embedding the whole corpus. Plus `items` and `dimension` getters.
+- **AI-agent-friendly docs** — "AI Agent Context" guidance on `search()`, an
+  `llms.txt` (intent + minimal syntax), and scenario examples
+  (`example/lib/faq_search_example.dart`, `custom_object_search_example.dart`).
+- Discoverability: description now leads with "Offline vector search"; topics
+  updated for on-device-AI search.
 
 ## 0.1.1
 
