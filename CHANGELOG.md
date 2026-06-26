@@ -12,6 +12,9 @@
   (`example/lib/faq_search_example.dart`, `custom_object_search_example.dart`).
 - Discoverability: description now leads with "Offline vector search"; topics
   updated for on-device-AI search.
+- Typed errors: searching before `initialize()` now throws
+  `EngineNotInitializedException` (re-exported, along with the download
+  exceptions, from `ai_core_codespark`). Requires `ai_core_codespark ^0.2.0`.
 
 ## 0.1.1
 

@@ -20,7 +20,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  ai_core_codespark: ">=0.1.1 <0.3.0"
+  ai_core_codespark: ^0.2.0
 
 dev_dependencies:
   flutter_test:

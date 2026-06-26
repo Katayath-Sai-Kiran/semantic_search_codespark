@@ -170,11 +170,12 @@ void main() {
     });
   });
 
-  test('searching before initialize throws', () async {
+  test('searching before initialize throws EngineNotInitializedException',
+      () async {
     final s = SemanticSearch.withEmbedder(FakeEmbedder());
     expect(
       () => s.search(query: 'x', items: ['y']),
-      throwsStateError,
+      throwsA(isA<EngineNotInitializedException>()),
     );
   });
 

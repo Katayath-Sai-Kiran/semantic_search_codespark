@@ -47,7 +47,7 @@ class SemanticSearch {
   /// strictness: higher (~0.7) for tight matches, lower (~0.3) to cast a wider
   /// net; omit it to rank everything. Embeds [items] on every call — fine for
   /// small or changing lists; for a stable dataset prefer [createIndex].
-  /// Requires [initialize] to have been awaited first.
+  /// Requires [initialize] first, else throws [EngineNotInitializedException].
   Future<List<SemanticResult<String>>> search({
     required String query,
     required List<String> items,
@@ -126,8 +126,9 @@ class SemanticSearch {
 
   void _ensureReady() {
     if (!isInitialized) {
-      throw StateError(
-          'SemanticSearch.initialize() must be awaited before searching.');
+      throw const EngineNotInitializedException(
+        'SemanticSearch.initialize() must be awaited before searching.',
+      );
     }
   }
 
